@@ -4,69 +4,65 @@ import Logo from '../../Img/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { logIn, signUp } from '../../actions/AuthAction.js';
 
-
 const Auth = () => {
-
     const [isSignUp, setIsSignUp] = useState(true);
     const dispatch = useDispatch();
     const loading = useSelector((state) => state.authReducer.loading);
 
-    const [data, setData] = useState({ firstname: "", lastname: "", email: "", password: "", confirmpass: "" });
-
+    const [data, setData] = useState({ firstname: "", lastname: "", username: "", email: "", password: "", confirmpass: "" });
     const [confirmPass, setConfirmPass] = useState(true);
 
     const handleChange = (e) => {
-        setData({ ...data, [e.target.name]: e.target.value })
+        setData({ ...data, [e.target.name]: e.target.value });
     }
-
 
     const handlSubmit = (e) => {
         e.preventDefault();
 
+        const userData = {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            username: data.username,  // Include username
+            email: data.email,
+            password: data.password,
+        };
+
+        console.log('User data for registration:', userData); // Debugging log
+
         if (isSignUp) {
-            data.password === data.confirmpass ? dispatch(signUp(data)) : setConfirmPass(false)
+            data.password === data.confirmpass ? dispatch(signUp(userData)) : setConfirmPass(false);
         } else {
-            dispatch(logIn(data))
+            dispatch(logIn(data));
         }
     }
 
-
-
     const restForm = () => {
         setConfirmPass(true);
-
         setData({
             firstname: "",
             lastname: "",
+            username: "",  // Reset username
             email: "",
             password: "",
             confirmpass: ""
-        })
+        });
     }
 
-
-
     return (
-
-        //    Left Side
         <div className='Auth'>
             <div className="a-left">
                 <img src={Logo} alt="" />
                 <div className="Webname">
-                    <h2>Welcome !</h2>
+                    <h2>Welcome!</h2>
                     <h5>Explore the ideas throughout <br /> the world.</h5>
                 </div>
             </div>
 
-
-            {/* Right Side */}
-
             <div className="a-right">
                 <form className='infoForm authForm' onSubmit={handlSubmit}>
-
                     <h2>{isSignUp ? "Sign Up" : "Log In"}</h2>
 
-                    {isSignUp &&
+                    {isSignUp && (
                         <div>
                             <input type="text" placeholder='First Name'
                                 className='infoInput' name='firstname'
@@ -78,8 +74,13 @@ const Auth = () => {
                                 onChange={handleChange}
                                 value={data.lastname}
                             />
+                            <input type="text" placeholder='Username'
+                                className='infoInput' name='username'
+                                onChange={handleChange}
+                                value={data.username}
+                            />
                         </div>
-                    }
+                    )}
 
                     <div>
                         <input type="text" placeholder='Email'
@@ -95,39 +96,34 @@ const Auth = () => {
                             onChange={handleChange}
                             value={data.password}
                         />
-                        {isSignUp &&
+                        {isSignUp && (
                             <input type="password" placeholder='Confirm Password'
                                 className='infoInput' name='confirmpass'
                                 onChange={handleChange}
                                 value={data.confirmpass}
                             />
-                        }
+                        )}
                     </div>
 
-
                     <span style={{ display: confirmPass ? "none" : "block", color: "red", fontSize: "12px", alignSelf: "flex-end", marginRight: "5px" }}>
-                        * Confirm Password is not same
+                        * Confirm Password is not the same
                     </span>
-
 
                     <div>
                         <span style={{ fontSize: "12px", cursor: "pointer" }}
-                            onClick={() => { setIsSignUp((prev) => !prev); restForm() }}
+                            onClick={() => { setIsSignUp((prev) => !prev); restForm(); }}
                         >
-                            {isSignUp ? "Already have an account? Login here" : "Don't have an account? SignUp here"}
+                            {isSignUp ? "Already have an account? Login here" : "Don't have an account? Sign Up here"}
                         </span>
                     </div>
 
                     <button className='button infoButton' type='submit' disabled={loading}>
-                        {loading ? "loading..." : isSignUp ? "Sign Up" : "Login"}
+                        {loading ? "Loading..." : isSignUp ? "Sign Up" : "Login"}
                     </button>
-
                 </form>
             </div>
         </div>
-    )
+    );
 }
 
-
-
-export default Auth
+export default Auth;
